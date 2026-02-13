@@ -2,47 +2,117 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | TABLE
+    |--------------------------------------------------------------------------
+    */
+
+    protected $table = 'users';
+
+    /*
+    |--------------------------------------------------------------------------
+    | ATTRIBUTS AUTORISÉS
+    |--------------------------------------------------------------------------
+    */
+
     protected $fillable = [
-        'name',
+        'nom',
+        'prenom',
         'email',
+        'telephone',
         'password',
+        'role'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | ATTRIBUTS CACHÉS
+    |--------------------------------------------------------------------------
+    */
+
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    /*
+    |--------------------------------------------------------------------------
+    | CASTS
+    |--------------------------------------------------------------------------
+    */
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONS RÔLES
+    |--------------------------------------------------------------------------
+    */
+
+    public function admin()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->hasOne(Admin::class);
+    }
+
+    public function chauffeur()
+    {
+        return $this->hasOne(Chauffeur::class);
+    }
+
+    public function passager()
+    {
+        return $this->hasOne(Passager::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELATION PORTEFEUILLE
+    |--------------------------------------------------------------------------
+    */
+
+   
+
+    /*
+    |--------------------------------------------------------------------------
+    | OTP
+    |--------------------------------------------------------------------------
+    */
+
+    public function otps()
+    {
+        return $this->hasMany(LoginOtp::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPERS
+    |--------------------------------------------------------------------------
+    */
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'ADMIN';
+    }
+
+    public function isChauffeur(): bool
+    {
+        return $this->role === 'CHAUFFEUR';
+    }
+
+    public function isPassager(): bool
+    {
+        return $this->role === 'PASSAGER';
     }
 }
