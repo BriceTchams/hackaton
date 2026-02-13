@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
-
+    protected $primaryKey = 'id_user';
     /*
     |--------------------------------------------------------------------------
     | TABLE
@@ -26,7 +26,7 @@ class User extends Authenticatable
     */
 
     protected $fillable = [
-        'nom',
+        'name',
         'prenom',
         'email',
         'telephone',

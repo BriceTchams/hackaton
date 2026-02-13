@@ -2,28 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Mail\LoginOtpMail;
 use App\Models\LoginOtp;
 use App\Models\User;
+use App\Models\Admin; // Changed from admin
+use App\Models\Chauffeur;
+use App\Models\Passager; // Changed from passager
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+    
+
+use Illuminate\Support\Facades\Log;
 
 class AuthOtpController extends Controller
 {
     private int $otpMinutes = 12;
     private int $maxAttempts = 5;
 
-    /**
-     * 1) Vérifie email/password, génère OTP, envoie email.
-     * Retourne otp_id.
-     */
+    // ================= LOGIN =================
+
     public function login(Request $request)
     {
         $validated = $request->validate([
-            'email'    => ['required', 'email'],
+            'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
 
@@ -31,10 +35,8 @@ class AuthOtpController extends Controller
             return response()->json(['message' => 'Identifiants invalides.'], 401);
         }
 
-        /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // Optionnel: invalider les anciens OTP non utilisés
         LoginOtp::where('user_id', $user->id)
             ->where('used', false)
             ->update(['used' => true]);
@@ -42,87 +44,108 @@ class AuthOtpController extends Controller
         $code = (string) random_int(100000, 999999);
 
         $otp = LoginOtp::create([
-            'user_id'    => $user->id,
-            'code_hash'  => Hash::make($code),
+            'user_id' => $user->id,
+            'code_hash' => Hash::make($code),
             'expires_at' => now()->addMinutes($this->otpMinutes),
-            'attempts'   => 0,
-            'used'       => false,
+            'attempts' => 0,
+            'used' => false
         ]);
 
         Mail::to($user->email)->send(new LoginOtpMail($code));
 
-        // Important: on ne renvoie PAS le code
         return response()->json([
-            // 'message' => 'OTP envoyé par mail.',
-            // 'otp_id'  => $otp->id,
-            'user_id' => $user->id,
-            'user'=>$user
+            'message' => 'OTP envoyé par mail.',
+            'otp_id' => $otp->id
         ]);
     }
 
-    /**
-     * 2) Vérifie OTP, crée token Sanctum, renvoie user + profil (admin/chauffeur/passager)
-     */
-    public function verifyOtp(Request $request)
-    {
-        $data = $request->validate([
-            'otp_id' => ['required', 'integer', 'exists:login_otps,id'],
-            'code'   => ['required', 'digits:6'],
-        ]);
+    // ================= REGISTER =================
 
-        $otp = LoginOtp::with('user')->find($data['otp_id']);
+   
+    
+ 
+        public function register(Request $request)
+        {
+            // 1. Validation stricte selon votre schéma SQL
+            $validated = $request->validate([
+                'nom' => ['required', ],
+                'prenom' => ['required', 'string', 'max:100'],
+                'email' => ['required', 'email', ],
+                'telephone' => ['required', ],
+                'password' => ['required', ],
+                'role' => ['required', ], // Respecter la casse ENUM
+                
+                // Champs spécifiques
+                'niveau_acces' => ['nullable',],
+                'numero_permis' => ['nullable', 'max:50'],
+                'photo_piece_identite' => ['nullable', 'string', 'max:255'],
+            ]);
+    
+                // 2. Utilisation d'une transaction pour éviter les comptes "orphelins"
+                    
+                    // Création dans la table 'utilisateur'
+                    // Note : mot_de_passe doit être haché
+                    $user = User::create([
+                        'name' => $validated['nom'],
+                        'prenom' => $validated['prenom'],
+                        'email' => $validated['email'],
+                        'telephone' => $validated['telephone'],
+                        'password' => Hash::make($validated['password']),
+                        'role' => $validated['role'],
+                    ]);
+    
+                    // 3. Création dans les tables liées (id_user est la clé primaire/étrangère)
+                    if ($validated['role'] === 'admin') {
+                        Admin::create([
+                            'id_user' => $user->id_user,
+                            'niveau_acces' => $validated['niveau_acces']
+                        ]);
 
-        if (!$otp) {
-            return response()->json(['message' => 'OTP inexistant.'], 404);
+                         return response()->json([
+                        'status' => 'success',
+                        'message' => 'Inscription réussie',
+                        'data' => $user
+                    ], 201);
+                    } 
+                    elseif ($validated['role'] === 'chauffeur') {
+                        Chauffeur::create([
+                            'id_user' => $user->id_user,
+                            'numero_permis' => $validated['numero_permis'],
+                            'photo_piece_identite' => $validated['photo_piece_identite'] ?? null,
+                            
+                        ]);
+                         return response()->json([
+                        'status' => 'success',
+                        'message' => 'Inscription réussie',
+                        'data' => $user
+                    ], 201);
+                    } 
+                    elseif ($validated['role'] === 'passager') {
+                        Passager::create([
+                            'id_user' => $user->id_user,
+                            'score_fidelite' => 0
+
+                        ]);
+                         return response()->json([
+                        'status' => 'success',
+                        'message' => 'Inscription réussie',
+                        'data' => $user
+                    ], 201);
+                    }
+    
+                    // return response()->json([
+                    //     'status' => 'success',
+                    //     'message' => 'Inscription réussie',
+                    //     'data' => $user
+                    // ], 201);
+    
+                // En cas d'erreur, on log pour débugger et on renvoie une réponse JSON
+                
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Une erreur est survenue lors de la création du compte.',
+                ], 500);
         }
-
-        if ($otp->used) {
-            return response()->json(['message' => 'OTP déjà utilisé.'], 409);
-        }
-
-        if (now()->greaterThan($otp->expires_at)) {
-            return response()->json(['message' => 'OTP expiré.'], 410);
-        }
-
-        if ($otp->attempts >= $this->maxAttempts) {
-            return response()->json(['message' => 'Trop de tentatives.'], 429);
-        }
-
-        // incrémente tentative à chaque essai
-        $otp->attempts++;
-        $otp->save();
-
-        if (!Hash::check($data['code'], $otp->code_hash)) {
-            return response()->json(['message' => 'Code incorrect.'], 422);
-        }
-
-        // Marquer utilisé
-        $otp->used = true;
-        $otp->save();
-
-        /** @var \App\Models\User $user */
-        $user = User::Where('id' , $otp->user_id)->get();
-
-                 return response()->json([
-                    'message' => 'Connexion validée.',
-                    'user' => $user
-
-                ]);
-
+        
     }
 
-    /**
-     * Logout: supprimer le token courant.
-     */
-    public function logout(Request $request)
-    {
-        /** @var \App\Models\User $user */
-        // $user = $request->user();
-
-        // if ($user && $request->user()->currentAccessToken()) {
-        //     $request->user()->currentAccessToken()->delete();
-        // }
-
-        // return response()->json(['message' => 'Déconnecté.']);
-    }
-}

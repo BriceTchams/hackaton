@@ -12,14 +12,17 @@ use App\Http\Controllers\AuthOtpController;
 
 
    Route::POST('/login' ,[AuthOtpController::class , 'login']
-) ;
+    ) ;
+
+       Route::POST('/register' ,[AuthOtpController::class , 'register']
+    ) ;
 
 Route::get('/login' ,function (){
     return response()->json(['data' , "brice"]);
 }
 
 );
-// Route::post('/verifyOtp' ,[AuthOtpController::class , 'verifyOtP']
-// );
+    Route::post('/verifyOtp' ,[AuthOtpController::class , 'verifyOtP']
+    );
 
 
