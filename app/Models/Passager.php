@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Passager extends Model
 {
-    protected $table = 'passager'; // Si c'est 'passagers' dans votre DB, ajoutez le 's'
+    protected $table = 'passagers'; // Si c'est 'passagers' dans votre DB, ajoutez le 's'
     // Indiquez le nom exact de la table
     
     // Indiquez la clé primaire personnalisée
@@ -26,6 +26,7 @@ class Passager extends Model
     // AUTORISEZ l'id_user à être rempli manuellement
     protected $fillable = [
         'id_user', 
-        'score_fidelite'
+        'score_fidelite' ,
+        'ville'
     ];
 }

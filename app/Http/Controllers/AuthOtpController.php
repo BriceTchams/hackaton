@@ -123,7 +123,8 @@ class AuthOtpController extends Controller
                     elseif ($validated['role'] === 'passager') {
                         Passager::create([
                             'id_user' => $user->id_user,
-                            'score_fidelite' => 0
+                            'score_fidelite' => 0,
+                            'ville'=>$request->ville
 
                         ]);
                          return response()->json([
