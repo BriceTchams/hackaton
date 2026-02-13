@@ -78,7 +78,7 @@ class AuthOtpController extends Controller
                 // Champs spécifiques
                 'niveau_acces' => ['nullable',],
                 'numero_permis' => ['nullable', 'max:50'],
-                'photo_piece_identite' => ['nullable', 'string', 'max:255'],
+                'photo_piece_identite' => ['nullable' ,'image'],
             ]);
     
                 // 2. Utilisation d'une transaction pour éviter les comptes "orphelins"
@@ -120,19 +120,32 @@ class AuthOtpController extends Controller
                         'data' => $user
                     ], 201);
                     } 
-                    elseif ($validated['role'] === 'passager') {
-                        Passager::create([
+                    elseif ($validated['role'] === 'chauffeur') {
+    
+                        $path = null;
+
+                        // Vérification et enregistrement de l'image
+                        if ($request->hasFile('photo_piece_identite')) {
+                            $file = $request->file('photo_piece_identite');
+                            
+                            // Créer un nom unique : ID_USER_TIMESTAMP.EXTENSION
+                            $fileName = 'cni_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                            
+                            // Stockage dans storage/app/public/pieces_identite
+                            $path = $file->storeAs('pieces_identite', $fileName, 'public');
+                        }
+
+                        Chauffeur::create([
                             'id_user' => $user->id_user,
-                            'score_fidelite' => 0,
-                            'ville'=>$request->ville
-
+                            'numero_permis' => $validated['numero_permis'],
+                            'photo_piece_identite' => $path, // On enregistre le chemin relatif
                         ]);
-                         return response()->json([
-                        'status' => 'success',
-                        'message' => 'Inscription réussie',
-                        'data' => $user
 
-                    ], 201);
+                        return response()->json([
+                            'status' => 'success',
+                            'message' => 'Inscription chauffeur réussie avec pièce d\'identité',
+                            'data' => $user
+                        ], 201);
                     }
                     //dsfdsfdsf
     

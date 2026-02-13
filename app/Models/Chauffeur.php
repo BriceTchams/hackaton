@@ -14,9 +14,11 @@ class Chauffeur extends Model
     protected $primaryKey = 'user_id';
 
     public $incrementing = false;
+        public $timestamps = false; 
+
 
     protected $fillable = [
-        'user_id',
+        'id_user',
         'numero_permis',
         'photo_piece_identite',
         'statut_validation',
