@@ -29,7 +29,7 @@ return new class extends Migration
                 'En attente',
                 'Valide',
                 'Bloque'
-            ])->default('En attente');
+            ])->default('En attente'); //brice
 
             $table->decimal('note_moyenne', 3, 2)->default(0);
 

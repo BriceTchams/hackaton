@@ -131,13 +131,15 @@ class AuthOtpController extends Controller
                         'status' => 'success',
                         'message' => 'Inscription réussie',
                         'data' => $user
+
                     ], 201);
                     }
+                    //dsfdsfdsf
     
                     // return response()->json([
                     //     'status' => 'success',
                     //     'message' => 'Inscription réussie',
-                    //     'data' => $user
+                    //     'data' => $usersddsf
                     // ], 201);
     
                 // En cas d'erreur, on log pour débugger et on renvoie une réponse JSON
