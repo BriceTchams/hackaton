@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('photo_piece_identite');
 
             $table->decimal('latitude', 10, 7)->nullable();
+            //comments
             $table->decimal('longitude', 10, 7)->nullable();
             $table->enum('statut_validation', [
                 'En attente',
