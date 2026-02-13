@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use App\Models\Portefeuille;
 use Illuminate\Support\Facades\DB;
     
 
@@ -59,11 +60,68 @@ class AuthOtpController extends Controller
         ]);
     }
 
+    public function verifyOtp(Request $request){
+        $data = $request->validate([
+        'otp_id' => ['required','integer','exists:login_otps,id'],
+        'code' => ['required','digits:6'],
+        ]);
+
+        $otp = LoginOtp::with('user')->find($data['otp_id']);
+
+        // verifie si l'otp existe
+        if (!$otp) {
+            return response()->json([
+                'message' => "otp inexistant"
+            ]);
+ 
+            }
+            // verfie si l'otp est expire
+           if (now()->greaterThan($otp->expires_at)) {
+                return response()->json([
+                'erreur' => "otp expiré"
+            ]);
+              }
+            // verifie si le nombre de tentative a ete atteint
+            if ($otp->attempts >= $this->maxAttempts) {
+                return response()->json(['message'=>"trop de tentative "]);
+
+              }
+
+                  $otp->attempts++; // incremente le nombre de tentative
+                 $otp->save();
+
+                // verifie si le code correspon au code enregistrer 
+                if (!Hash::check($data['code'], $otp->code_hash)) {
+                       return response()->json(['message'=>"code incorrecte "]);
+                 }
+
+                //  / marquer utilisé
+                $otp->used = true;
+                $otp->save();
+
+                    // créer session (cookie)
+                //  Auth::loginUsingId($otp->id);
+                // retour final si tout s'est bien passé
+
+                $user = User::Where('id' , $otp->user_id)->get();
+
+                 return response()->json([
+                    'message' => 'Connexion validée.',
+                    'user' => $user
+
+                ]);
+
+
+
+
+
+    }
+
+
+
     // ================= REGISTER =================
 
    
-    
- 
         public function register(Request $request)
         {
             // 1. Validation stricte selon votre schéma SQL
@@ -93,6 +151,12 @@ class AuthOtpController extends Controller
                         'password' => Hash::make($validated['password']),
                         'role' => $validated['role'],
                     ]);
+
+                    // Portefeuille::create([
+                    //     'user_id' => $user->id,
+                    //     'solde_points' => 0,
+                    //     'date_derniere_maj' => now(),
+                    // ]);
     
                     // 3. Création dans les tables liées (id_user est la clé primaire/étrangère)
                     if ($validated['role'] === 'admin') {
@@ -162,6 +226,9 @@ class AuthOtpController extends Controller
                     'message' => 'Une erreur est survenue lors de la création du compte.',
                 ], 500);
         }
+
+
+        
         
     }
 

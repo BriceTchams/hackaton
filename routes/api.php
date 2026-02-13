@@ -20,3 +20,23 @@ use App\Http\Controllers\AuthOtpController;
     );
 
 
+// Groupe de routes pour les passagers
+// Route::middleware(['role:passager'])->group(function () {
+    Route::get('/accueil', function(){
+        return response()->json(['message' => 'Profil passager']);
+    });
+    
+// });
+
+
+
+
+
+
+Route::middleware(['role:chauffeur'])->group(function () {
+    // Route::get('/mes-reservations', [TrajetController::class, 'mesReservations']);
+});
+
+Route::middleware(['role:admin'])->group(function () {
+    // Route::get('/mes-reservations', [TrajetController::class, 'mesReservations']);
+});
