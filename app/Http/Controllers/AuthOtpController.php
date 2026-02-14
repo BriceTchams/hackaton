@@ -151,12 +151,12 @@ class AuthOtpController extends Controller
                         'password' => Hash::make($validated['password']),
                         'role' => $validated['role'],
                     ]);
-
-                    // Portefeuille::create([
-                    //     'user_id' => $user->id,
-                    //     'solde_points' => 0,
-                    //     'date_derniere_maj' => now(),
-                    // ]);
+            //creation du portefeuille de l'utilisateur
+                    Portefeuille::create([
+                        'user_id' => $user->id,
+                        'solde_points' => 0,
+                        'date_derniere_maj' => now(),
+                    ]);
     
                     // 3. Création dans les tables liées (id_user est la clé primaire/étrangère)
                     if ($validated['role'] === 'admin') {
