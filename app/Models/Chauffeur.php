@@ -37,4 +37,10 @@ class Chauffeur extends Model
     public function user()
     {
     return  $this->belongsTo(User::class, 'id_user');   }
+
+    public function courses()
+{
+    return $this->hasMany(Course::class, 'id_chauffeur', 'id_user');
+}
+
 }

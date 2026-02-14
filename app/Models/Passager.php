@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 namespace App\Models;
 
@@ -29,4 +31,14 @@ class Passager extends Model
         'score_fidelite' ,
         'ville'
     ];
+
+    public function courses()
+{
+    return $this->hasMany(Course::class, 'id_passager', 'id_user');
+}
+
+
+
+
+
 }

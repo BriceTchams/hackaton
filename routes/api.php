@@ -24,55 +24,55 @@ Route::post('/login', [AuthOtpController::class, 'login']);
 Route::post('/verifyOtp', [AuthOtpController::class, 'verifyOtp']);
 
 //admin
-Route::group(['prefix' => 'admin'], function () {
-    Route::get('/chauffeurs', [ChauffeurController::class, 'index']);
-    Route::get('/chauffeurs/{id}', [ChauffeurController::class, 'show']);
-    Route::patch('/chauffeurs/{id}/validate', [ChauffeurController::class, 'validateAccount']);
-    Route::patch('/chauffeurs/{id}/status', [ChauffeurController::class, 'updateStatus']);
+  Route::group(['prefix' => 'admin'], function () {
+      Route::get('/chauffeurs', [ChauffeurController::class, 'index']);
+      Route::get('/chauffeurs/{id}', [ChauffeurController::class, 'show']);
+      Route::patch('/chauffeurs/{id}/validate', [ChauffeurController::class, 'validateAccount']);
+      Route::patch('/chauffeurs/{id}/status', [ChauffeurController::class, 'updateStatus']);
 
-    // porte feuille
- Route::post('/wallet/show', [PortefeuilleController::class, 'show']);
-    Route::post('/wallet/recharge', [TransactionPointsController::class, 'recharge']);
-     Route::get('/wallet/historique', [TransactionPointsController::class, 'historique']);
+      // porte feuille
+  Route::post('/wallet/show', [PortefeuilleController::class, 'show']);
+      Route::post('/wallet/recharge', [TransactionPointsController::class, 'recharge']);
+      Route::get('/wallet/historique', [TransactionPointsController::class, 'historique']);
 
-});
+  });
 
 //chauffeur
-Route::group(['prefix' => 'chauffeur'], function () {
-    Route::patch('/location/{id}', [ChauffeurController::class, 'updateLocation']);
-    Route::get('/profile/{id}', [ChauffeurController::class, 'show']);
-    //porteffeuille
-  Route::post('/wallet/show', [PortefeuilleController::class, 'show']);
-    Route::post('/wallet/recharge', [TransactionPointsController::class, 'recharge']);
-     Route::get('/wallet/historique', [TransactionPointsController::class, 'historique']);
+  Route::group(['prefix' => 'chauffeur'], function () {
+      Route::patch('/location/{id}', [ChauffeurController::class, 'updateLocation']);
+      Route::get('/profile/{id}', [ChauffeurController::class, 'show']);
+      //porteffeuille
+    Route::post('/wallet/show', [PortefeuilleController::class, 'show']);
+      Route::post('/wallet/recharge', [TransactionPointsController::class, 'recharge']);
+      Route::get('/wallet/historique', [TransactionPointsController::class, 'historique']);
 
-     // vehicule
-        Route::prefix('vehicules')->group(function () {
+      // vehicule
+          Route::prefix('vehicules')->group(function () {
 
-        Route::post('/', [VehiculesController::class, 'store']);
-        Route::get('/chauffeur/{id_chauffeur}', [VehiculesController::class, 'showByChauffeur']);
-        Route::put('/{id_vehicule}', [VehiculesController::class, 'update']);
-        Route::delete('/{id_vehicule}', [VehiculesController::class, 'destroy']);
+          Route::post('/', [VehiculesController::class, 'store']);
+          Route::get('/chauffeur/{id_chauffeur}', [VehiculesController::class, 'showByChauffeur']);
+          Route::put('/{id_vehicule}', [VehiculesController::class, 'update']);
+          Route::delete('/{id_vehicule}', [VehiculesController::class, 'destroy']);
 
-    });
+      });
 
-});
+  });
 
 //passager
-Route::group(['prefix' => 'passager'], function () {
-    Route::patch('/location/{id}', [ChauffeurController::class, 'updateLocation']);
-    Route::get('/liste-chauffeurs', [ChauffeurController::class, 'index']);
-    Route::get('/recherche/{id}', [ChauffeurController::class, 'show']);
-    //portefeuille
-    Route::post('/wallet/show', [PortefeuilleController::class, 'show']);
-    Route::post('/wallet/recharge', [TransactionPointsController::class, 'recharge']);
-     Route::get('/wallet/historique', [TransactionPointsController::class, 'historique']);
+  Route::group(['prefix' => 'passager'], function () {
+      Route::patch('/location/{id}', [ChauffeurController::class, 'updateLocation']);
+      Route::get('/liste-chauffeurs', [ChauffeurController::class, 'index']);
+      Route::get('/recherche/{id}', [ChauffeurController::class, 'show']);
+      //portefeuille
+      Route::post('/wallet/show', [PortefeuilleController::class, 'show']);
+      Route::post('/wallet/recharge', [TransactionPointsController::class, 'recharge']);
+      Route::get('/wallet/historique', [TransactionPointsController::class, 'historique']);
 
-     //paiement course
-         Route::post('/coursepay', [CourseController::class, 'store']);
-         Route::post('/cancelcourse', [CourseController::class, 'cancel']);
+      //paiement course
+          Route::post('/coursepay', [CourseController::class, 'store']);
+          Route::post('/cancelcourse', [CourseController::class, 'cancel']);
 
-});
+  });
 
    
 

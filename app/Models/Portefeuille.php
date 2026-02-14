@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User; // Add this import
 
 class Portefeuille extends Model
 {
@@ -30,6 +31,7 @@ class Portefeuille extends Model
 
     protected $casts = [
         'date_derniere_maj' => 'datetime',
+        'solde_points' => 'integer', // Add this cast
     ];
 
     /*

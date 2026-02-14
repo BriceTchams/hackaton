@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
-    protected $primaryKey = 'id_user';
+    // protected $primaryKey = 'id_user';
     /*
     |--------------------------------------------------------------------------
     | TABLE
@@ -77,6 +77,11 @@ class User extends Authenticatable
         return $this->hasOne(Passager::class);
     }
 
+ 
+    // public function portefeuille()
+    // {
+    //     return $this->hasOne(Portefeuille::class);
+    // }
     /*
     |--------------------------------------------------------------------------
     | RELATION PORTEFEUILLE

@@ -30,6 +30,7 @@ return new class extends Migration
                 'Valide',
                 'Bloque'
             ])->default('En attente'); //brice
+            $table->string('etat');
 
             $table->decimal('note_moyenne', 3, 2)->default(0);
 

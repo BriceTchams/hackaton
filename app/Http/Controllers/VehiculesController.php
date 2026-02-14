@@ -72,7 +72,7 @@ class VehiculesController extends Controller
     }
 
     /**
-     * ❌ Supprimer véhicule
+     * 
      */
     public function destroy($id_vehicule)
     {
