@@ -5,6 +5,10 @@ use App\Http\Controllers\AuthOtpController;
 use App\Http\Controllers\ChauffeurController;
 use App\Http\Controllers\PortefeuilleController;
 use App\Http\Controllers\TransactionPointsController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\VehiculesController;
+
+
 
 // use App\Models\Portefeuille;
 
@@ -42,6 +46,16 @@ Route::group(['prefix' => 'chauffeur'], function () {
     Route::post('/wallet/recharge', [TransactionPointsController::class, 'recharge']);
      Route::get('/wallet/historique', [TransactionPointsController::class, 'historique']);
 
+     // vehicule
+        Route::prefix('vehicules')->group(function () {
+
+        Route::post('/', [VehiculesController::class, 'store']);
+        Route::get('/chauffeur/{id_chauffeur}', [VehiculesController::class, 'showByChauffeur']);
+        Route::put('/{id_vehicule}', [VehiculesController::class, 'update']);
+        Route::delete('/{id_vehicule}', [VehiculesController::class, 'destroy']);
+
+    });
+
 });
 
 //passager
@@ -53,7 +67,13 @@ Route::group(['prefix' => 'passager'], function () {
     Route::post('/wallet/show', [PortefeuilleController::class, 'show']);
     Route::post('/wallet/recharge', [TransactionPointsController::class, 'recharge']);
      Route::get('/wallet/historique', [TransactionPointsController::class, 'historique']);
+
+     //paiement course
+         Route::post('/coursepay', [CourseController::class, 'store']);
+         Route::post('/cancelcourse', [CourseController::class, 'cancel']);
+
 });
 
+   
 
 // 
