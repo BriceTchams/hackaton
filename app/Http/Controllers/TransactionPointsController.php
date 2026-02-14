@@ -32,7 +32,7 @@ class TransactionPointsController extends Controller
         DB::transaction(function () use ($portefeuille, $request) {
 
             // 1️ Mise à jour du solde
-            $portefeuille->solde_points += $request->montant/10;
+            $portefeuille->solde_points += $request->montant/250;
             $portefeuille->date_derniere_maj = now();
             $portefeuille->save();
 
@@ -41,7 +41,7 @@ class TransactionPointsController extends Controller
                 'id_portefeuille' => $portefeuille->id_portefeuille,
                 'type_mouv' => 'Recharge',
                 'montant' => $request->montant,
-                'valeur_points' => $request->montant/10 ,
+                'valeur_points' => $request->montant/250 ,
                 'date_heure' => now(),
             ]);
         });
