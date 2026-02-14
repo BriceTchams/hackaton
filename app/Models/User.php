@@ -78,10 +78,11 @@ class User extends Authenticatable
     }
 
  
-    // public function portefeuille()
-    // {
-    //     return $this->hasOne(Portefeuille::class);
-    // }
+ 
+    public function portefeuille()
+    {
+        return $this->hasOne(Portefeuille::class, 'user_id');
+    }
     /*
     |--------------------------------------------------------------------------
     | RELATION PORTEFEUILLE
