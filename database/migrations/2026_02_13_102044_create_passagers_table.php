@@ -16,7 +16,7 @@ return new class extends Migration
                   ->primary()
                   ->constrained('users') 
                   ->cascadeOnDelete();
-            $table->string('ville');
+            $table->string('ville')->nullable();
 
 
             $table->integer('score_fidelite')->default(0);

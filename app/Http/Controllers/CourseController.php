@@ -138,4 +138,29 @@ class CourseController extends Controller
             ]);
         });
     }
+
+    /**
+ * Lister une course active (En cours)
+ */
+        public function activeCourses($id)
+        {
+            // On récupère les courses avec le statut 'En cours'
+            // On utilise eager loading (with) pour éviter le problème N+1 si tu as des relations définies
+            $courses = Course::where('statut_course', 'En cours')
+                // ->orderBy('created_at', 'desc')
+                ->get();
+
+            if ($courses->isEmpty()) {
+                return response()->json([
+                    'message' => 'Aucune course active pour le moment',
+                    'data' => []
+                ], 200);
+            }
+
+            return response()->json([
+                'message' => 'Liste des courses actives récupérée',
+                'count' => $courses->count(),
+                'data' => $courses
+            ], 200);
+        }
 }

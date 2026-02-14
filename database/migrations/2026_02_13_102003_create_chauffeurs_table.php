@@ -18,7 +18,7 @@ return new class extends Migration
                   ->cascadeOnDelete();
 
             $table->string('numero_permis', 50);
-                        $table->string('ville');
+                        $table->string('ville')->nullable();
 
             $table->string('photo_piece_identite');
 

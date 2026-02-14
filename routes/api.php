@@ -71,6 +71,10 @@ Route::post('/verifyOtp', [AuthOtpController::class, 'verifyOtp']);
       //paiement course
           Route::post('/coursepay', [CourseController::class, 'store']);
           Route::post('/cancelcourse', [CourseController::class, 'cancel']);
+          Route::get('/courses/actives', [CourseController::class, 'activeCourses']);
+
+      //
+
 
   });
 
