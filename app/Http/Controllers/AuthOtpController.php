@@ -211,7 +211,7 @@ class AuthOtpController extends Controller
                         Chauffeur::create([
                             'id_user' => $user->id,
                             'numero_permis' => $request->numero_permis,
-                            'photo_piece_identite' => $request->photo_piece_identite, // On enregistre le chemin relatif
+                            'photo_piece_identite' => $request->photo_piece_identite ?? null, // On enregistre le chemin relatif
                         ]);
 
                         return response()->json([
