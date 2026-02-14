@@ -85,9 +85,15 @@
                     <div class="absolute inset-0 flex items-center">
                         <div class="w-full border-t border-gray-700"></div>
                     </div>
-               
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-gray-800 text-gray-400 italic">Nouveau ici ?</span>
+                    </div>
                 </div>
-             
+                <div class="mt-6">
+                    <a href="#" class="w-full flex justify-center py-2 px-4 border border-gray-600 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 transition-colors">
+                        Créer un compte
+                    </a>
+                </div>
             </div>
         </div>
     </div>

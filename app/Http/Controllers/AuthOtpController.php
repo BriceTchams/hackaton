@@ -24,7 +24,27 @@ class AuthOtpController extends Controller
     private int $maxAttempts = 5;
 
     // ================= LOGIN =================
+    public function logina(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
+        ]);
 
+        if (!Auth::attempt($validated)) {
+            return response()->json(['message' => 'Identifiants invalides.'], 401);
+        }
+
+        $user = Auth::user();
+
+     
+    
+        return redirect()->route('dashboard');
+        // return response()->json([
+        //     'message' => 'success.',
+        //     'user' => $user
+        // ]);
+    }
     public function login(Request $request)
     {
         $validated = $request->validate([
@@ -107,7 +127,7 @@ class AuthOtpController extends Controller
 
                  return response()->json([
                     'message' => 'Connexion validée.',
-                    'user' => $user
+                    'user' => $user 
 
                 ]);
 
