@@ -125,31 +125,20 @@ class AuthOtpController extends Controller
         public function register(Request $request)
         {
             // 1. Validation stricte selon votre schéma SQL
-            $validated = $request->validate([
-                'nom' => ['required', ],
-                'prenom' => ['required', 'string', 'max:100'],
-                'email' => ['required', 'email', ],
-                'telephone' => ['required', ],
-                'password' => ['required', ],
-                'role' => ['required', ], // Respecter la casse ENUM
-                
-                // Champs spécifiques
-                'niveau_acces' => ['nullable',],
-                'numero_permis' => ['nullable', 'max:50'],
-                'photo_piece_identite' => ['nullable' ,'image'],
-            ]);
+           
     
                 // 2. Utilisation d'une transaction pour éviter les comptes "orphelins"
                     
                     // Création dans la table 'utilisateur'
                     // Note : mot_de_passe doit être haché
                     $user = User::create([
-                        'name' => $validated['nom'],
-                        'prenom' => $validated['prenom'],
-                        'email' => $validated['email'],
-                        'telephone' => $validated['telephone'],
-                        'password' => Hash::make($validated['password']),
-                        'role' => $validated['role'],
+                        'name' => $request->nom,
+                        'prenom' => $request->prenom,
+                        'email' => $request->email,
+                        'telephone' => $request->telephone,
+                        'password' => Hash::make($request->password),
+                        'role' => $request->role,
+                      
                     ]);
             //creation du portefeuille de l'utilisateur
                     Portefeuille::create([
@@ -159,10 +148,10 @@ class AuthOtpController extends Controller
                     ]);
     
                     // 3. Création dans les tables liées (id_user est la clé primaire/étrangère)
-                    if ($validated['role'] === 'admin') {
+                    if ($request->role === 'admin') {
                         Admin::create([
-                            'id_user' => $user->id_user,
-                            'niveau_acces' => $validated['niveau_acces']
+                            'id_user' => $user->id,
+                            'niveau_acces' => $request->niveau_acces,
                         ]);
 
                          return response()->json([
@@ -171,11 +160,11 @@ class AuthOtpController extends Controller
                         'data' => $user
                     ], 201);
                     } 
-                    elseif ($validated['role'] === 'chauffeur') {
-                        Chauffeur::create([
-                            'id_user' => $user->id_user,
-                            'numero_permis' => $validated['numero_permis'],
-                            'photo_piece_identite' => $validated['photo_piece_identite'] ?? null,
+                   if ($request->role === 'passager') {
+                        Passager::create([
+                            'id_user' => $user->id,
+                            'ville' => $request->ville,
+                            'score_fidelit' => $request->score_fidelit,
                             
                         ]);
                          return response()->json([
@@ -184,11 +173,11 @@ class AuthOtpController extends Controller
                         'data' => $user
                     ], 201);
                     } 
-                    elseif ($validated['role'] === 'chauffeur') {
+                    if ($request->role === 'chauffeur') {
     
                         $path = null;
 
-                        // Vérification et enregistrement de l'image
+                        // // Vérification et enregistrement de l'image
                         if ($request->hasFile('photo_piece_identite')) {
                             $file = $request->file('photo_piece_identite');
                             
@@ -200,9 +189,9 @@ class AuthOtpController extends Controller
                         }
 
                         Chauffeur::create([
-                            'id_user' => $user->id_user,
-                            'numero_permis' => $validated['numero_permis'],
-                            'photo_piece_identite' => $path, // On enregistre le chemin relatif
+                            'id_user' => $user->id,
+                            'numero_permis' => $request->numero_permis,
+                            'photo_piece_identite' => $request->photo_piece_identite, // On enregistre le chemin relatif
                         ]);
 
                         return response()->json([
@@ -222,7 +211,7 @@ class AuthOtpController extends Controller
                 // En cas d'erreur, on log pour débugger et on renvoie une réponse JSON
                 
                 return response()->json([
-                    'status' => 'error',
+                    'status' => $user,
                     'message' => 'Une erreur est survenue lors de la création du compte.',
                 ], 500);
         }
